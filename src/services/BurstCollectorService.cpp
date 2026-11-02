@@ -23,6 +23,7 @@
 #include "utils/CardResidue.h"
 #include "utils/ArchiveRecordCount.h"
 #include "services/OximetryImport.h"
+#include "services/O2RingFileWatch.h"
 #include "services/RemovedNights.h"
 #include "services/SefamCardMirror.h"
 #include "database/SQLiteDatabase.h"
@@ -1805,7 +1806,7 @@ bool BurstCollectorService::executeBurstCycle() {
     //
     if (oximetry_service_) {
         try {
-            static bool o2ring_was_active = false;
+            static O2RingFileWatch o2ring_watch;
 
             auto live = oximetry_service_->pollLive();
 
@@ -1830,15 +1831,13 @@ bool BurstCollectorService::executeBurstCycle() {
                     db_service_->saveLiveOximetrySample(kOximetryDeviceId, date_buf,
                                                          live.spo2, live.hr, live.motion);
                 }
-                o2ring_was_active = true;
-            } else if (o2ring_was_active && reachable) {
-                // STATE: Session just ended (active→inactive transition)
-                // Ring wrote .vld file — download it now
-                std::cout << "O2Ring: Session ended — checking for new files" << std::endl;
-                oximetry_service_->collectAndPublish();
-                o2ring_was_active = false;
             }
-            // STATE: Unreachable or was already inactive — no action, wait
+            // The end of a session, and then each poll for a while after it:
+            // the ring can list its file a few minutes after going inactive.
+            if (o2ring_watch.shouldCollect(live.active, reachable)) {
+                std::cout << "O2Ring: Session ended — checking for new files" << std::endl;
+                o2ring_watch.collected(oximetry_service_->collectAndPublish());
+            }
         } catch (const std::exception& e) {
             std::cerr << "O2Ring: Failed (non-fatal): " << e.what() << std::endl;
         }
