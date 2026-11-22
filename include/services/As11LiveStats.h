@@ -5,12 +5,16 @@
 // and flow limitation (and SpO2 and heart rate when the machine's oximeter
 // sends them), kept from the one-second blocks the stream already produces.
 // Nothing here reads the machine or the broker: a block goes in, a snapshot
-// comes out, so the unit suite can feed it blocks and read what MQTT would
-// send. There is no timer; it moves when a block lands. The Home Assistant
-// sensors (As11LiveStatsPublisher, below) read it.
+// comes out, so the unit suite can feed it blocks and read what the UI and
+// MQTT would show. There is no timer; it moves when a block lands.
+//
+// It serves two readers: GET /api/as11/live for the Dashboard card,
+// and the realtime/* MQTT sensors (As11LiveStatsPublisher, below).
 //
 #include "clients/As11Stream.h"
 #include "mqtt/LiveState.h"
+
+#include <json/json.h>
 
 #include <ctime>
 #include <functional>
@@ -54,6 +58,11 @@ public:
     void block(const as11::StreamBlock& b);
 
     Snapshot snapshot() const;
+
+    /// What GET /api/as11/live answers. `age_s` says how long ago the last
+    /// block landed, so the page can grey out a stream that has stalled.
+    Json::Value toJson(bool enabled) const;
+    static Json::Value toJson(const Snapshot& s, bool enabled, long long now_s);
 
 private:
     Now                 now_;

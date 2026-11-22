@@ -16,6 +16,7 @@ import { PressureSectionComponent, PressureSectionData } from '../../components/
 import { nightPressure, pressureTrendPlan } from '../../components/dashboard/pressure-source';
 import { RespiratoryMetricsComponent, RespiratoryMetricsData } from '../../components/dashboard/respiratory-metrics.component';
 import { RealtimeStatusComponent, RealtimeStatusData } from '../../components/dashboard/realtime-status.component';
+import { As11LiveComponent } from '../../components/dashboard/as11-live.component';
 import { MlIntelligenceComponent } from '../../components/dashboard/ml-intelligence.component';
 import { DashboardData, TrendPoint, OximetryData, SessionListItem, SleepIndexBand, MyAirComparisonRow } from '../../models/session.model';
 import { MyAirCompareComponent } from '../../components/dashboard/myair-compare.component';
@@ -38,7 +39,7 @@ const MODE_LABELS: Record<string, string> = {
   imports: [CommonModule, KeyMetricsComponent, OximetryRowComponent, AiSummaryComponent,
             TherapyInsightsComponent, StrMetricsComponent, EventsBreakdownComponent,
             PressureSectionComponent, RespiratoryMetricsComponent, RealtimeStatusComponent,
-            MlIntelligenceComponent, MyAirCompareComponent, UpdateBannerComponent, TranslatePipe,
+            As11LiveComponent, MlIntelligenceComponent, MyAirCompareComponent, UpdateBannerComponent, TranslatePipe,
             RouterLink],
   template: `
     <div class="dashboard">
@@ -157,6 +158,9 @@ const MODE_LABELS: Record<string, string> = {
 
       <!-- 8. Respiratory Metrics -->
       <app-respiratory-metrics [data]="respiratoryData" *ngIf="hasCardData(respiratoryData)" />
+
+      <!-- The AirSense 11's live figures (Settings option; draws nothing when off) -->
+      <app-as11-live />
 
       <!-- 9. Real-Time Status -->
       <app-realtime-status [data]="realtimeData" *ngIf="showRealtime" />

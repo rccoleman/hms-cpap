@@ -435,6 +435,11 @@ export class CpapApiService {
     return this.http.post<any>('/api/ml/train', {});
   }
 
+  /** The AirSense 11's live figures (Settings: airsense11_ble.live_stats). */
+  getAs11Live(): Observable<any> {
+    return this.http.get<any>('/api/as11/live');
+  }
+
   getMlStatus(): Observable<any> {
     return this.http.get<any>('/api/ml/status');
   }

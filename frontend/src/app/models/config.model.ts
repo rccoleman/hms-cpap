@@ -97,7 +97,7 @@ export interface AppConfig {
      *  gaps under 60 s with zeros. Every AirSense 11 stream, this host's
      *  Bluetooth or a bridge's. Applied live. */
     strict_stream_gaps?: boolean;
-    live_stats?: boolean;  // the machine's live figures, as Home Assistant sensors
+    live_stats?: boolean;  // the machine's live figures, on the Dashboard and as HA sensors
   };
   /** SDD-064: a DreamStation 2 read over this host's own Bluetooth, after the
    *  night (when another source says the night ended, or on Read now). The

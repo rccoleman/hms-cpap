@@ -86,6 +86,33 @@ As11LiveStats::Snapshot As11LiveStats::snapshot() const {
     return s;
 }
 
+Json::Value As11LiveStats::toJson(const Snapshot& s, bool enabled, long long now_s) {
+    Json::Value j(Json::objectValue);
+    j["enabled"]   = enabled;
+    j["streaming"] = enabled && s.streaming;
+    if (!enabled || !s.streaming) return j;
+    j["serial"]     = s.serial;
+    j["updated_at"] = static_cast<Json::Int64>(s.updated_at);
+    j["age_s"]      = static_cast<Json::Int64>(std::max<long long>(0, now_s - s.updated_at));
+    auto put = [&j](const char* k, const std::optional<double>& v) {
+        j[k] = v ? Json::Value(*v) : Json::Value(Json::nullValue);
+    };
+    put("leak_lpm", s.leak_lpm);
+    put("pressure_cmh2o", s.pressure_cmh2o);
+    put("resp_rate", s.resp_rate);
+    put("tidal_ml", s.tidal_ml);
+    put("minute_vent_lpm", s.minute_vent_lpm);
+    put("snore", s.snore);
+    put("flow_limitation", s.flow_limitation);
+    put("spo2", s.spo2);
+    put("heart_rate", s.heart_rate);
+    return j;
+}
+
+Json::Value As11LiveStats::toJson(bool enabled) const {
+    return toJson(snapshot(), enabled, now_());
+}
+
 // ── the MQTT side ──────────────────────────────────────────────────────────
 
 namespace {

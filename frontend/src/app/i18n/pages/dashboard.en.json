@@ -129,6 +129,21 @@
       "currentPressure": "Current Pressure",
       "maxPressure": "Max Pressure"
     },
+    "as11Live": {
+      "title": "AirSense 11, live",
+      "subtitle": "Updates every few seconds while the machine is in therapy",
+      "leak": "Leak",
+      "pressure": "Mask pressure",
+      "respRate": "Respiratory rate",
+      "tidalVolume": "Tidal volume",
+      "minuteVent": "Minute ventilation",
+      "snore": "Snore",
+      "flowLimitation": "Flow limitation",
+      "spo2": "SpO2",
+      "heartRate": "Heart rate",
+      "stale": "No update for {{seconds}} s",
+      "unitLeak": "L/min"
+    },
     "oximetry": {
       "odi": "ODI (3%)",
       "ringStatus": "Ring Status",

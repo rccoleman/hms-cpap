@@ -35,6 +35,10 @@ TEST(As11LiveStats, NothingBeforeABlock) {
     As11LiveStats st([] { return 100LL; });
     EXPECT_FALSE(st.snapshot().streaming);
     EXPECT_FALSE(st.snapshot().any());
+    const auto j = st.toJson(true);
+    EXPECT_TRUE(j["enabled"].asBool());
+    EXPECT_FALSE(j["streaming"].asBool());
+    EXPECT_FALSE(j.isMember("leak_lpm"));
 }
 
 TEST(As11LiveStats, ALeakInLitresPerSecondReadsInLitresPerMinute) {
@@ -105,6 +109,33 @@ TEST(As11LiveStats, TherapyStartingForgetsLastNightsFigures) {
     st.therapy(true);   // a new night: nothing from the old one is live
     EXPECT_FALSE(st.snapshot().any());
     EXPECT_FALSE(st.snapshot().streaming);   // no block yet
+}
+
+TEST(As11LiveStats, TheAgeSaysHowLongAgoTheLastBlockLanded) {
+    long long now = 100;
+    As11LiveStats st([&now] { return now; });
+    st.block(blockWith({{as11::kLeak, 0.1}}));
+    now = 107;
+    const auto j = st.toJson(true);
+    EXPECT_EQ(j["age_s"].asInt64(), 7);
+    EXPECT_TRUE(j["streaming"].asBool());
+}
+
+TEST(As11LiveStats, WhenSwitchedOffTheAnswerCarriesNoFigures) {
+    As11LiveStats st([] { return 100LL; });
+    st.block(blockWith({{as11::kLeak, 0.1}}));
+    const auto j = st.toJson(false);
+    EXPECT_FALSE(j["enabled"].asBool());
+    EXPECT_FALSE(j["streaming"].asBool());
+    EXPECT_FALSE(j.isMember("leak_lpm"));
+}
+
+TEST(As11LiveStats, AFigureTheMachineLacksIsNullNotZero) {
+    As11LiveStats st([] { return 100LL; });
+    st.block(blockWith({{as11::kLeak, 0.1}}));   // no SpO2
+    const auto j = st.toJson(true);
+    EXPECT_TRUE(j.isMember("spo2"));
+    EXPECT_TRUE(j["spo2"].isNull());
 }
 
 // ── the publisher ──────────────────────────────────────────────────────────

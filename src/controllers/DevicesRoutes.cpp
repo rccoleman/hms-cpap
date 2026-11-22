@@ -255,6 +255,25 @@ void rememberSourceProbe(const Json::Value& probe) {
 
 void installRoutes(const RouteDeps& deps) {
     g = deps;
+
+    // The AirSense 11's live figures while it streams therapy (the option
+    // airsense11_ble.live_stats). Always answers: {"enabled": false} when the
+    // option is off, {"enabled": true, "streaming": false} when the machine is
+    // not in therapy, and the figures and their age when it is.
+    drogon::app().registerHandler(
+        "/api/as11/live",
+        [](const drogon::HttpRequestPtr&, Callback&& cb) {
+            Json::Value v(Json::objectValue);
+            if (g.burst && g.burst->as11LiveStats())
+                v = g.burst->as11LiveStats()->toJson(g.burst->as11LiveStatsEnabled());
+            else {
+                v["enabled"]   = false;
+                v["streaming"] = false;
+            }
+            cb(json(v));
+        },
+        {drogon::Get});
+
     if (!g.store) return;
 
     drogon::app().registerHandler(

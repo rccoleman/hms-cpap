@@ -317,8 +317,8 @@ struct AppConfig {
         // Applies live from the next block; written files are not changed.
         bool strict_stream_gaps = false;
         // The machine's live figures (leak, pressure, respiratory
-        // rate...) while it streams therapy, as Home Assistant sensors.
-        // Off by default. Applies live, no restart.
+        // rate...) while it streams therapy, on the Dashboard and as Home
+        // Assistant sensors. Off by default. Applies live, no restart.
         bool live_stats = false;
     } airsense11_ble;
 

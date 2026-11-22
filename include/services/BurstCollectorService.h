@@ -602,8 +602,11 @@ public:
     /// After a burst: the live state's own tick (the card's off is in
     /// observeCardListing, SDD-068).
     void cardMaskTick(long long now_s);
-private:
+    /// The AirSense 11's live figures (leak, pressure...), fed from its
+    /// stream; always kept, shown only when airsense11_ble.live_stats is on.
+    std::shared_ptr<As11LiveStats> as11LiveStats() const { return as11_stats_; }
     bool as11LiveStatsEnabled() const;
+private:
     std::shared_ptr<LiveState> liveState() const;
     std::shared_ptr<mule::LivePublisher> as11Live() const;
     /// A block of the stream, for the live figures and their MQTT sensors.

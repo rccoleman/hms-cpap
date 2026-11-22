@@ -129,6 +129,21 @@
       "currentPressure": "Jelenlegi nyomás",
       "maxPressure": "Max. nyomás"
     },
+    "as11Live": {
+      "title": "AirSense 11, élő",
+      "subtitle": "Néhány másodpercenként frissül, amíg a készülék terápiában van",
+      "leak": "Szivárgás",
+      "pressure": "Maszknyomás",
+      "respRate": "Légzésszám",
+      "tidalVolume": "Légzési térfogat",
+      "minuteVent": "Percventilláció",
+      "snore": "Horkolás",
+      "flowLimitation": "Áramláskorlátozás",
+      "spo2": "SpO2",
+      "heartRate": "Pulzusszám",
+      "stale": "{{seconds}} s óta nincs frissítés",
+      "unitLeak": "L/perc"
+    },
     "oximetry": {
       "odi": "ODI (3%)",
       "ringStatus": "A gyűrű állapota",
