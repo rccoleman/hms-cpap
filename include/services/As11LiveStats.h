@@ -73,6 +73,10 @@ public:
     bool announce();
     /// Offers a snapshot; sends what is due. Returns how many messages went out.
     int offer(const As11LiveStats::Snapshot& s, long long now_s);
+    /// The option was switched off: the discovery configs are cleared (an
+    /// empty retained payload deletes them), so the entities leave Home
+    /// Assistant rather than sit unavailable for good.
+    bool retract();
     /// Therapy ended: the sensors go unavailable (an availability topic, as a
     /// retained value is not a number), so Home Assistant does not show last
     /// night's leak.

@@ -189,9 +189,29 @@ TEST_F(As11LiveStatsPublisherTest, EndingMakesTheSensorsUnavailableAndTheNextNig
     EXPECT_TRUE(sent("available", "online"));
 }
 
+TEST_F(As11LiveStatsPublisherTest, SwitchingOffRemovesTheEntities) {
+    As11LiveStatsPublisher p(pub, "dev", "CPAP", 10);
+    p.announce();
+    p.offer(snap(3.0, 9.0), 1000);
+    out.clear();
+    ASSERT_TRUE(p.retract());
+    int cleared = 0;
+    for (auto& m : out)
+        if (m.topic.rfind("homeassistant/sensor/dev_as11_live_", 0) == 0 && m.payload.empty() && m.retain) ++cleared;
+    EXPECT_EQ(cleared, 9) << "an empty retained config deletes each entity";
+    bool availability_cleared = false;
+    for (auto& m : out)
+        if (m.topic == "cpap/dev/realtime/as11/available" && m.payload.empty() && m.retain) availability_cleared = true;
+    EXPECT_TRUE(availability_cleared);
+    // And a later night starts clean: everything is sent again.
+    out.clear();
+    EXPECT_EQ(p.offer(snap(3.0, 9.0), 2000), 3);
+}
+
 TEST_F(As11LiveStatsPublisherTest, WithoutAPublishFunctionNothingHappens) {
     As11LiveStatsPublisher p(nullptr, "dev", "CPAP", 10);
     EXPECT_FALSE(p.announce());
+    EXPECT_FALSE(p.retract());
     EXPECT_EQ(p.offer(snap(3.0, 9.0), 1000), 0);
     p.ended();
 }

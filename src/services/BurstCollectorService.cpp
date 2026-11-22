@@ -944,6 +944,11 @@ void BurstCollectorService::setLiveState(std::shared_ptr<LiveState> live) {
     as11_stats_pub_ = std::make_shared<As11LiveStatsPublisher>(live_->publisher(), live_->deviceId(),
                                                                live_->deviceName());
     as11_stats_announced_ = false;
+    if (as11LiveStatsEnabled()) {
+        // The sensors exist in Home Assistant before a night streams. A
+        // broker that is away now is tried again with the first block.
+        as11_stats_announced_ = as11_stats_pub_->announce();
+    }
     // SDD-064 D5: the device's mask going off is a night's end, whichever
     // source saw it; it is what starts a DreamStation 2 read.
     live_->setMaskHook([this](const LiveState::MaskChange& c, bool night_ended) {
@@ -969,6 +974,38 @@ bool BurstCollectorService::as11LiveStatsEnabled() const {
     return app_config_ && app_config_->airsense11_ble.live_stats;
 }
 
+bool BurstCollectorService::announceAs11LiveStats() {
+    std::shared_ptr<As11LiveStatsPublisher> pub;
+    {
+        std::lock_guard<std::mutex> lk(live_mtx_);
+        if (as11_stats_announced_) return true;
+        pub = as11_stats_pub_;
+    }
+    if (!pub) return false;
+    const bool ok = pub->announce();   // false while the broker is away: tried again
+    if (ok) {
+        std::lock_guard<std::mutex> lk(live_mtx_);
+        as11_stats_announced_ = true;
+    }
+    return ok;
+}
+
+void BurstCollectorService::applyAs11LiveStats(bool on) {
+    if (on) {
+        announceAs11LiveStats();
+    } else {
+        std::shared_ptr<As11LiveStatsPublisher> pub;
+        {
+            std::lock_guard<std::mutex> lk(live_mtx_);
+            pub = as11_stats_pub_;
+            as11_stats_announced_ = false;
+        }
+        if (pub) pub->retract();
+    }
+    std::cout << "Config reload: AirSense11 live figures -> "
+              << (on ? "on, announced to Home Assistant" : "off, removed from Home Assistant") << std::endl;
+}
+
 void BurstCollectorService::as11LiveBlock(const as11::StreamBlock& b) {
     // Where the night stands on the machine's clock: the live AHI is events
     // over the hours so far, and without this it has none.
@@ -977,16 +1014,15 @@ void BurstCollectorService::as11LiveBlock(const as11::StreamBlock& b) {
     // whether anyone is shown it.
     as11_stats_->block(b);
     if (!as11LiveStatsEnabled()) return;
+    // Announced at start and when the option is switched on; a broker that was
+    // away then is tried again here, with the first block that lands.
+    if (!announceAs11LiveStats()) return;
     std::shared_ptr<As11LiveStatsPublisher> pub;
-    bool announce = false;
     {
         std::lock_guard<std::mutex> lk(live_mtx_);
         pub = as11_stats_pub_;
-        if (pub && !as11_stats_announced_) { as11_stats_announced_ = true; announce = true; }
     }
-    if (!pub) return;
-    if (announce) pub->announce();
-    pub->offer(as11_stats_->snapshot(), static_cast<long long>(std::time(nullptr)));
+    if (pub) pub->offer(as11_stats_->snapshot(), static_cast<long long>(std::time(nullptr)));
 }
 
 std::string BurstCollectorService::cardMaskSource() const {
@@ -1099,6 +1135,8 @@ void BurstCollectorService::cardMaskTick(long long now_s) {
     const auto live = liveState();
     if (!live) return;
     live->tick(LiveState::Clock::time_point(std::chrono::seconds(now_s)));
+    // The live-figure sensors announced late: the broker was away at start.
+    if (as11LiveStatsEnabled()) announceAs11LiveStats();
 }
 
 void BurstCollectorService::applyAirSense11Capture(bool on) {
@@ -5314,6 +5352,7 @@ void BurstCollectorService::snapshotConfig(ConfigSnapshot& snap) {
     snap.airsense11_ble_address = app_config_->airsense11_ble.address;
     snap.airsense11_ble_capture = app_config_->airsense11_ble.capture;
     snap.airsense11_strict_stream_gaps = app_config_->airsense11_ble.strict_stream_gaps;
+    snap.airsense11_ble_live_stats = app_config_->airsense11_ble.live_stats;
     snap.ds2_ble_enabled = app_config_->ds2_ble.enabled;
     snap.ds2_ble_address = app_config_->ds2_ble.address;
 }
@@ -5652,6 +5691,8 @@ void BurstCollectorService::reloadConfig() {
         // (AirSense11BleClient::streamOnce reads it before StartStream).
         applyAirSense11Capture(nc.airsense11_ble_capture);
     }
+    if (nc.airsense11_ble_live_stats != last_config_.airsense11_ble_live_stats)
+        applyAs11LiveStats(nc.airsense11_ble_live_stats);
 
     // PR #106: the gap policy is the shared writer's own, set on the writer
     // that is there (every stream source keeps feeding it): from the next

@@ -1375,6 +1375,7 @@ private:
         std::string airsense11_ble_address;
         bool airsense11_ble_capture = false;   // SDD-071, applied live
         bool airsense11_strict_stream_gaps = false;   // PR #106, applied live
+        bool airsense11_ble_live_stats = false;   // applied live
         bool ds2_ble_enabled = false;
         std::string ds2_ble_address;
     };
@@ -1397,6 +1398,11 @@ private:
     void initAirSense11();
     /// SDD-071: the capture setting onto the running Bluetooth client.
     void applyAirSense11Capture(bool on);
+    /// The live-figures option switched: the sensors are announced to Home
+    /// Assistant (so they exist before a night streams), or taken away.
+    void applyAs11LiveStats(bool on);
+    /// Announces the sensors once; true when they are announced.
+    bool announceAs11LiveStats();
 
     /// SDD-050: hand the publisher what the card's identification file says
     /// the machine is. The card root is the local folder when the card is

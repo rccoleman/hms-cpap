@@ -164,6 +164,18 @@ int As11LiveStatsPublisher::offer(const As11LiveStats::Snapshot& snap, long long
     return sent;
 }
 
+bool As11LiveStatsPublisher::retract() {
+    if (!publish_) return false;
+    std::lock_guard<std::mutex> lk(mu_);
+    last_.clear();
+    last_sent_ = 0;
+    bool ok = true;
+    for (const auto& s : kSensors)
+        ok &= publish_("homeassistant/sensor/" + device_id_ + "_as11_live_" + s.name + "/config", "", 1, true);
+    ok &= publish_(topic(device_id_, "available"), "", 1, true);
+    return ok;
+}
+
 void As11LiveStatsPublisher::ended() {
     if (!publish_) return;
     std::lock_guard<std::mutex> lk(mu_);
