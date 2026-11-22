@@ -418,6 +418,11 @@ import { showLocalModelSection } from './local-model';
                 <input type="checkbox" [(ngModel)]="config.airsense11_ble.capture" name="as11_capture" />
               </label>
               <p class="hint">{{ 'settings.as11.captureHint' | translate }}</p>
+              <label class="toggle-row">
+                {{ 'settings.as11.liveStats' | translate }}
+                <input type="checkbox" [(ngModel)]="config.airsense11_ble.live_stats" name="as11_live_stats" />
+              </label>
+              <p class="hint">{{ 'settings.as11.liveStatsHint' | translate }}</p>
               <p class="hint" *ngIf="config.airsense11_ble.capture && captureFile?.path">
                 {{ 'settings.as11.captureFile' | translate: { path: captureFile!.path, size: captureSize(captureFile!.bytes) } }}
               </p>
@@ -1966,9 +1971,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
           cfg.o2ring = { enabled: false, mode: 'http', mule_url: '' };
         }
         if (!cfg.airsense11_ble) {
-          cfg.airsense11_ble = { enabled: false, address: '', capture: false, strict_stream_gaps: false };
+          cfg.airsense11_ble = { enabled: false, address: '', capture: false, live_stats: false, strict_stream_gaps: false };
         }
         if (cfg.airsense11_ble.capture === undefined) cfg.airsense11_ble.capture = false;
+        if (cfg.airsense11_ble.live_stats === undefined) cfg.airsense11_ble.live_stats = false;
         if (cfg.airsense11_ble.strict_stream_gaps === undefined) cfg.airsense11_ble.strict_stream_gaps = false;
         if (!cfg.ds2_ble) {
           cfg.ds2_ble = { enabled: false, address: '' };

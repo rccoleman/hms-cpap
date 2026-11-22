@@ -116,6 +116,8 @@
       "enabled": "Ativado",
       "capture": "Gravar cada noite para o suporte",
       "captureHint": "Guarda num ficheiro tudo o que o aparelho envia durante cada noite, para que nos possa enviar junto com a pasta do cartão SD dessa noite. As suas noites são lidas da mesma forma que sem esta opção. Desligue-a quando terminar.",
+      "liveStats": "Enviar valores ao vivo para o Home Assistant durante a terapia",
+      "liveStatsHint": "Fuga, pressão da máscara, frequência respiratória e mais do aparelho enquanto ele transmite uma noite, como sensores do Home Assistant (requer MQTT). A noite é lida da mesma forma nos dois casos.",
       "captureFile": "A gravar em {{path}} ({{size}}).",
       "captureNone": "Ainda nada gravado: o ficheiro começa com a próxima noite.",
       "strictGaps": "Dividir a curva nas falhas do fluxo",

@@ -316,6 +316,10 @@ struct AppConfig {
         // HMS_CPAP_STRICT_STREAM_GAPS=1 switches it on (applyEnvFallbacks).
         // Applies live from the next block; written files are not changed.
         bool strict_stream_gaps = false;
+        // The machine's live figures (leak, pressure, respiratory
+        // rate...) while it streams therapy, as Home Assistant sensors.
+        // Off by default. Applies live, no restart.
+        bool live_stats = false;
     } airsense11_ble;
 
     /// Issue #108: the machine the pairing belongs to, as the Bluetooth
@@ -906,6 +910,7 @@ struct AppConfig {
                 if (b.contains("paired_serial"))        config.airsense11_ble.paired_serial = b["paired_serial"];
                 if (b.contains("capture"))              config.airsense11_ble.capture = b["capture"];
                 if (b.contains("strict_stream_gaps"))   config.airsense11_ble.strict_stream_gaps = b["strict_stream_gaps"];
+                if (b.contains("live_stats"))           config.airsense11_ble.live_stats = b["live_stats"];
             }
 
             if (j.contains("ds2_ble")) {
@@ -1093,6 +1098,7 @@ struct AppConfig {
             j["airsense11_ble"]["paired_serial"] = airsense11_ble.paired_serial;
             j["airsense11_ble"]["capture"] = airsense11_ble.capture;
             j["airsense11_ble"]["strict_stream_gaps"] = airsense11_ble.strict_stream_gaps;
+            j["airsense11_ble"]["live_stats"] = airsense11_ble.live_stats;
 
             j["ds2_ble"]["enabled"] = ds2_ble.enabled;
             j["ds2_ble"]["address"] = ds2_ble.address;
@@ -1266,6 +1272,7 @@ struct AppConfig {
         j["airsense11_ble"]["paired_serial"] = airsense11_ble.paired_serial;
         j["airsense11_ble"]["capture"] = airsense11_ble.capture;
         j["airsense11_ble"]["strict_stream_gaps"] = airsense11_ble.strict_stream_gaps;
+        j["airsense11_ble"]["live_stats"] = airsense11_ble.live_stats;
 
         j["ds2_ble"]["enabled"] = ds2_ble.enabled;
         j["ds2_ble"]["address"] = ds2_ble.address;

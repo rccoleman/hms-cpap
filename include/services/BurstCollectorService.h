@@ -11,6 +11,7 @@
 #include "services/MyAirService.h"
 #include "services/AirSense11Pull.h"
 #include "clients/IAirSense11Pairing.h"
+#include "services/As11LiveStats.h"
 #include "services/As11NightImport.h"
 #include "services/As11NightWriter.h"
 #include "clients/Ds2BleReader.h"
@@ -602,8 +603,14 @@ public:
     /// observeCardListing, SDD-068).
     void cardMaskTick(long long now_s);
 private:
+    bool as11LiveStatsEnabled() const;
     std::shared_ptr<LiveState> liveState() const;
     std::shared_ptr<mule::LivePublisher> as11Live() const;
+    /// A block of the stream, for the live figures and their MQTT sensors.
+    void as11LiveBlock(const as11::StreamBlock& b);
+    std::shared_ptr<As11LiveStats> as11_stats_ = std::make_shared<As11LiveStats>();
+    std::shared_ptr<As11LiveStatsPublisher> as11_stats_pub_;   // under live_mtx_
+    bool as11_stats_announced_ = false;                        // under live_mtx_
     mutable std::mutex live_mtx_;
     std::shared_ptr<LiveState> live_;
     std::shared_ptr<mule::LivePublisher> as11_live_;   // the Bluetooth night, on live_

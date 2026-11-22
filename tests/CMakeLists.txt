@@ -190,6 +190,7 @@ set(TEST_SOURCES
     services/test_As11CardEdf.cpp
     services/test_As11StoredNight.cpp
     services/test_As11NightWriter.cpp
+    services/test_As11LiveStats.cpp
     services/test_As11Settings.cpp
     services/test_As11NightImport.cpp
     services/test_SessionSource.cpp
@@ -435,6 +436,7 @@ if(BUILD_WITH_WEB AND NOT WIN32)
         ${CMAKE_SOURCE_DIR}/src/services/As11CardEdf.cpp
         ${CMAKE_SOURCE_DIR}/src/services/As11StoredNight.cpp
         ${CMAKE_SOURCE_DIR}/src/services/As11NightWriter.cpp
+        ${CMAKE_SOURCE_DIR}/src/services/As11LiveStats.cpp
         ${CMAKE_SOURCE_DIR}/src/services/As11Settings.cpp
         ${CMAKE_SOURCE_DIR}/src/services/As11StrWriter.cpp
         # platform SDD-059: the night writer and the receiver note what they write.

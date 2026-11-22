@@ -940,6 +940,10 @@ void BurstCollectorService::setLiveState(std::shared_ptr<LiveState> live) {
                                                        live_->deviceName());
     as11_live_->setState(live_, LiveState::kAs11Ble);
     as11_live_->announce();
+    // The AirSense 11's live figures go out on the same broker and device.
+    as11_stats_pub_ = std::make_shared<As11LiveStatsPublisher>(live_->publisher(), live_->deviceId(),
+                                                               live_->deviceName());
+    as11_stats_announced_ = false;
     // SDD-064 D5: the device's mask going off is a night's end, whichever
     // source saw it; it is what starts a DreamStation 2 read.
     live_->setMaskHook([this](const LiveState::MaskChange& c, bool night_ended) {
@@ -959,6 +963,30 @@ std::shared_ptr<LiveState> BurstCollectorService::liveState() const {
 std::shared_ptr<mule::LivePublisher> BurstCollectorService::as11Live() const {
     std::lock_guard<std::mutex> lk(live_mtx_);
     return as11_live_;
+}
+
+bool BurstCollectorService::as11LiveStatsEnabled() const {
+    return app_config_ && app_config_->airsense11_ble.live_stats;
+}
+
+void BurstCollectorService::as11LiveBlock(const as11::StreamBlock& b) {
+    // Where the night stands on the machine's clock: the live AHI is events
+    // over the hours so far, and without this it has none.
+    if (auto p = as11Live()) p->block(b.serial, b.start_ms, b.endMs());
+    // Always kept (it is a few assignments a second); the option decides
+    // whether anyone is shown it.
+    as11_stats_->block(b);
+    if (!as11LiveStatsEnabled()) return;
+    std::shared_ptr<As11LiveStatsPublisher> pub;
+    bool announce = false;
+    {
+        std::lock_guard<std::mutex> lk(live_mtx_);
+        pub = as11_stats_pub_;
+        if (pub && !as11_stats_announced_) { as11_stats_announced_ = true; announce = true; }
+    }
+    if (!pub) return;
+    if (announce) pub->announce();
+    pub->offer(as11_stats_->snapshot(), static_cast<long long>(std::time(nullptr)));
 }
 
 std::string BurstCollectorService::cardMaskSource() const {
@@ -1125,6 +1153,16 @@ void BurstCollectorService::initAirSense11() {
                     if (on) p->announce();   // again: a broker that was away at start
                     p->therapy(serial, serial, on);
                 }
+                as11_stats_->therapy(on);
+                if (!on) {
+                    std::shared_ptr<As11LiveStatsPublisher> pub;
+                    {
+                        // Only when the sensors were ever announced.
+                        std::lock_guard<std::mutex> lk(live_mtx_);
+                        if (as11_stats_announced_) pub = as11_stats_pub_;
+                    }
+                    if (pub) pub->ended();
+                }
                 // Issue #50: no burst reads this night while it streams (it
                 // is imported when the stream ends), so the session's own
                 // topics are said here: ON while the machine streams, OFF
@@ -1136,11 +1174,7 @@ void BurstCollectorService::initAirSense11() {
             [this](const std::string& serial, const as11::RespEvent& e) {
                 if (auto p = as11Live()) p->event(serial, serial, e);
             },
-            // Where the night stands on the machine's clock: the live AHI is
-            // events over the hours so far, and without this it has none.
-            [this](const as11::StreamBlock& b) {
-                if (auto p = as11Live()) p->block(b.serial, b.start_ms, b.endMs());
-            },
+            [this](const as11::StreamBlock& b) { as11LiveBlock(b); },
         });
         client->startNightLoop(as11_night_writer_, [this] { as11_summary_due_ = true; });
         airsense11_pull_ = std::make_unique<AirSense11Pull>(client, db_service_, device_id_,

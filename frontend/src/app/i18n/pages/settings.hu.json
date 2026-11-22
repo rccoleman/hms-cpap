@@ -116,6 +116,8 @@
       "enabled": "Bekapcsolva",
       "capture": "Minden éjszaka rögzítése az ügyfélszolgálatnak",
       "captureHint": "Fájlba menti mindazt, amit a készülék éjszakánként küld, hogy elküldhesse nekünk az adott éjszaka SD-kártya mappájával együtt. Az éjszakái ugyanúgy beolvasódnak, mint nélküle. Ha végzett, kapcsolja ki.",
+      "liveStats": "Élő értékek küldése a Home Assistantnak a terápia alatt",
+      "liveStatsHint": "Szivárgás, maszknyomás, légzésszám és még több a készüléktől, amíg az éjszakát közvetíti, Home Assistant érzékelőként (MQTT szükséges). Az éjszaka mindkét esetben ugyanúgy kerül beolvasásra.",
       "captureFile": "Rögzítés ide: {{path}} ({{size}}).",
       "captureNone": "Még nincs rögzítve semmi: a fájl a következő éjszakával kezdődik.",
       "strictGaps": "A görbe szétvágása az adatfolyam kimaradásainál",

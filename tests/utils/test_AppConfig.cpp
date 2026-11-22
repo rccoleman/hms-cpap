@@ -657,6 +657,22 @@ TEST_F(AppConfigTest, TheStrictStreamGapVariableSwitchesTheSettingOn) {
     EXPECT_TRUE(c.airsense11_ble.strict_stream_gaps);
 }
 
+TEST_F(AppConfigTest, AirSense11LiveStatsIsOffByDefaultAndSurvivesSaveAndLoad) {
+    // The live figures are an option, off until it is turned on.
+    AppConfig defaults;
+    EXPECT_FALSE(defaults.airsense11_ble.live_stats);
+    EXPECT_EQ(defaults.toJson()["airsense11_ble"]["live_stats"], false);
+
+    AppConfig a;
+    a.airsense11_ble.live_stats = true;
+    a.save(config_path_);
+
+    AppConfig b;
+    ASSERT_TRUE(AppConfig::load(config_path_, b));
+    EXPECT_TRUE(b.airsense11_ble.live_stats);
+    EXPECT_EQ(b.toJson()["airsense11_ble"]["live_stats"], true);
+}
+
 // ── HMS_CPAP_DATA_DIR override (issue #16) ──────────────────────────────
 // In a container $HOME is the writable layer, so config.json written there is
 // destroyed by `docker compose down` and the next boot demands the setup wizard

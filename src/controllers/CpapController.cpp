@@ -533,6 +533,7 @@ void CpapController::updateConfig(const drogon::HttpRequestPtr& req,
         if (b.isMember("capture")) config_->airsense11_ble.capture = b["capture"].asBool();   // SDD-071
         if (b.isMember("strict_stream_gaps"))   // PR #106, applied live by the reload
             config_->airsense11_ble.strict_stream_gaps = b["strict_stream_gaps"].asBool();
+        if (b.isMember("live_stats")) config_->airsense11_ble.live_stats = b["live_stats"].asBool();
     }
 
     if (j.isMember("ds2_ble")) {   // SDD-064
