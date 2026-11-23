@@ -134,6 +134,7 @@
       "subtitle": "Atualiza a cada poucos segundos enquanto o aparelho está em terapia",
       "leak": "Fuga",
       "pressure": "Pressão da máscara",
+      "therapyPressure": "Pressão da terapia",
       "respRate": "Frequência respiratória",
       "tidalVolume": "Volume corrente",
       "minuteVent": "Ventilação minuto",

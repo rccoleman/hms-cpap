@@ -134,6 +134,7 @@
       "subtitle": "Updates every few seconds while the machine is in therapy",
       "leak": "Leak",
       "pressure": "Mask pressure",
+      "therapyPressure": "Therapy pressure",
       "respRate": "Respiratory rate",
       "tidalVolume": "Tidal volume",
       "minuteVent": "Minute ventilation",

@@ -14,11 +14,11 @@ test('a stream that has not started shows nothing', () => {
 test('the figures the machine sent show, in the card order, rounded', () => {
   const f = as11LiveFigures({
     enabled: true, streaming: true,
-    leak_lpm: 3.04, pressure_cmh2o: 9.06, resp_rate: 14.5, tidal_ml: 449.6,
+    leak_lpm: 3.04, pressure_cmh2o: 9.06, therapy_pressure_cmh2o: 12.04, resp_rate: 14.5, tidal_ml: 449.6,
     minute_vent_lpm: 6.5, snore: 0.2, flow_limitation: 0.05,
   });
   assert.deepEqual(f.map((x) => `${x.label}=${x.value}${x.unit ? ' ' + x.unit : ''}`), [
-    'leak=3.0 L/min', 'pressure=9.1 cmH₂O', 'respRate=14.5 /min', 'tidalVolume=450 mL',
+    'leak=3.0 L/min', 'pressure=9.1 cmH₂O', 'therapyPressure=12.0 cmH₂O', 'respRate=14.5 /min', 'tidalVolume=450 mL',
     'minuteVent=6.5 L/min', 'snore=0.20', 'flowLimitation=0.05',
   ]);
 });

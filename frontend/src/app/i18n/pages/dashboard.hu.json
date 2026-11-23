@@ -134,6 +134,7 @@
       "subtitle": "Néhány másodpercenként frissül, amíg a készülék terápiában van",
       "leak": "Szivárgás",
       "pressure": "Maszknyomás",
+      "therapyPressure": "Terápiás nyomás",
       "respRate": "Légzésszám",
       "tidalVolume": "Légzési térfogat",
       "minuteVent": "Percventilláció",

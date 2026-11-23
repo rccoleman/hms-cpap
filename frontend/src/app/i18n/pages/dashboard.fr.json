@@ -134,6 +134,7 @@
       "subtitle": "Mis à jour toutes les quelques secondes pendant la thérapie",
       "leak": "Fuite",
       "pressure": "Pression du masque",
+      "therapyPressure": "Pression de traitement",
       "respRate": "Fréquence respiratoire",
       "tidalVolume": "Volume courant",
       "minuteVent": "Ventilation minute",

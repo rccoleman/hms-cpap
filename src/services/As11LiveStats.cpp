@@ -99,6 +99,7 @@ Json::Value As11LiveStats::toJson(const Snapshot& s, bool enabled, long long now
     };
     put("leak_lpm", s.leak_lpm);
     put("pressure_cmh2o", s.pressure_cmh2o);
+    put("therapy_pressure_cmh2o", s.therapy_pressure_cmh2o);
     put("resp_rate", s.resp_rate);
     put("tidal_ml", s.tidal_ml);
     put("minute_vent_lpm", s.minute_vent_lpm);
