@@ -135,6 +135,7 @@
       "leak": "Fuite",
       "pressure": "Pression du masque",
       "therapyPressure": "Pression de traitement",
+      "expiratoryPressure": "Pression expiratoire",
       "respRate": "Fréquence respiratoire",
       "tidalVolume": "Volume courant",
       "minuteVent": "Ventilation minute",

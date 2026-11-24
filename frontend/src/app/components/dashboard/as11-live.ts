@@ -9,6 +9,7 @@ export interface As11Live {
   leak_lpm?: number | null;
   pressure_cmh2o?: number | null;
   therapy_pressure_cmh2o?: number | null;
+  expiratory_pressure_cmh2o?: number | null;
   resp_rate?: number | null;
   tidal_ml?: number | null;
   minute_vent_lpm?: number | null;
@@ -36,6 +37,7 @@ const FIGURES: { key: keyof As11Live; label: string; unit: string; places: numbe
   { key: 'leak_lpm',        label: 'leak',           unit: 'L/min',  places: 1, icon: 'fa-wind' },
   { key: 'pressure_cmh2o',  label: 'pressure',       unit: 'cmH₂O',  places: 1, icon: 'fa-gauge' },
   { key: 'therapy_pressure_cmh2o', label: 'therapyPressure', unit: 'cmH₂O', places: 1, icon: 'fa-gauge-high' },
+  { key: 'expiratory_pressure_cmh2o', label: 'expiratoryPressure', unit: 'cmH₂O', places: 1, icon: 'fa-gauge' },
   { key: 'resp_rate',       label: 'respRate',       unit: '/min',   places: 1, icon: 'fa-lungs' },
   { key: 'tidal_ml',        label: 'tidalVolume',    unit: 'mL',     places: 0, icon: 'fa-lungs' },
   { key: 'minute_vent_lpm', label: 'minuteVent',     unit: 'L/min',  places: 1, icon: 'fa-lungs' },

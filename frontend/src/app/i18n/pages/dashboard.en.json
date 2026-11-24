@@ -135,6 +135,7 @@
       "leak": "Leak",
       "pressure": "Mask pressure",
       "therapyPressure": "Therapy pressure",
+      "expiratoryPressure": "Expiratory pressure",
       "respRate": "Respiratory rate",
       "tidalVolume": "Tidal volume",
       "minuteVent": "Minute ventilation",

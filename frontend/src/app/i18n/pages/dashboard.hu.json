@@ -135,6 +135,7 @@
       "leak": "Szivárgás",
       "pressure": "Maszknyomás",
       "therapyPressure": "Terápiás nyomás",
+      "expiratoryPressure": "Kilégzési nyomás",
       "respRate": "Légzésszám",
       "tidalVolume": "Légzési térfogat",
       "minuteVent": "Percventilláció",
