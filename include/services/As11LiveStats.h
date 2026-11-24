@@ -33,6 +33,7 @@ public:
         long long   updated_at = 0;         // wall seconds of the last block; 0: none yet
         std::optional<double> leak_lpm;            // L/min
         std::optional<double> pressure_cmh2o;      // mask pressure
+        std::optional<double> expiratory_pressure_cmh2o;   // the pressure it drops to as you breathe out (EPR)
         std::optional<double> therapy_pressure_cmh2o;   // the pressure the machine delivers (its 2 s inspiratory pressure)
         std::optional<double> resp_rate;           // breaths/min
         std::optional<double> tidal_ml;

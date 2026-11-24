@@ -45,7 +45,7 @@ std::string fixed(double v, int places) {
 As11LiveStats::As11LiveStats(Now now) : now_(std::move(now)) {}
 
 bool As11LiveStats::Snapshot::any() const {
-    return leak_lpm || pressure_cmh2o || therapy_pressure_cmh2o || resp_rate || tidal_ml || minute_vent_lpm || snore ||
+    return leak_lpm || pressure_cmh2o || therapy_pressure_cmh2o || expiratory_pressure_cmh2o || resp_rate || tidal_ml || minute_vent_lpm || snore ||
            flow_limitation || spo2 || heart_rate;
 }
 
@@ -68,6 +68,7 @@ void As11LiveStats::block(const as11::StreamBlock& b) {
     keep(s_.pressure_cmh2o, meanOf(b, as11::kMaskPressure));
     if (!b.channel(as11::kMaskPressure)) keep(s_.pressure_cmh2o, lastOf(b, as11::kMaskPressure2s));
     keep(s_.therapy_pressure_cmh2o, lastOf(b, as11::kInspPressure2s));
+    keep(s_.expiratory_pressure_cmh2o, lastOf(b, as11::kExpPressure2s));
     keep(s_.resp_rate, lastOf(b, as11::kRespRate));
     // Tidal volume is the machine's litres; shown as mL.
     if (auto v = lastOf(b, as11::kTidalVolume)) s_.tidal_ml = *v * 1000.0;
@@ -102,6 +103,7 @@ const Sensor kSensors[] = {
     {"leak",            "Live leak",             "L/min",     "mdi:water-percent", 1, &As11LiveStats::Snapshot::leak_lpm},
     {"pressure",        "Live mask pressure",    "cmH2O",     "mdi:gauge",         1, &As11LiveStats::Snapshot::pressure_cmh2o},
     {"therapy_pressure", "Live therapy pressure", "cmH2O",    "mdi:gauge-full",    1, &As11LiveStats::Snapshot::therapy_pressure_cmh2o},
+    {"expiratory_pressure", "Live expiratory pressure", "cmH2O", "mdi:gauge-low",    1, &As11LiveStats::Snapshot::expiratory_pressure_cmh2o},
     {"resp_rate",       "Live respiratory rate", "breaths/min", "mdi:lungs",       1, &As11LiveStats::Snapshot::resp_rate},
     {"tidal_volume",    "Live tidal volume",     "mL",        "mdi:lungs",         0, &As11LiveStats::Snapshot::tidal_ml},
     {"minute_vent",     "Live minute ventilation", "L/min",   "mdi:lungs",         1, &As11LiveStats::Snapshot::minute_vent_lpm},

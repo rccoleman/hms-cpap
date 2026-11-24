@@ -51,6 +51,7 @@ TEST(As11LiveStats, EveryFigureIsRead) {
     As11LiveStats st([] { return 100LL; });
     st.block(blockWith({{as11::kLeak, 0.05},
                         {as11::kInspPressure2s, 12.0},
+                        {as11::kExpPressure2s, 9.0},
                         {as11::kRespRate, 14.5},
                         {as11::kTidalVolume, 0.45},
                         {as11::kMinuteVent, 6.5},
@@ -62,6 +63,7 @@ TEST(As11LiveStats, EveryFigureIsRead) {
     const auto s = st.snapshot();
     EXPECT_NEAR(*s.pressure_cmh2o, 9.0, 0.02);
     EXPECT_NEAR(*s.therapy_pressure_cmh2o, 12.0, 0.02);   // the delivered pressure, not the mask's
+    EXPECT_NEAR(*s.expiratory_pressure_cmh2o, 9.0, 0.02);   // below the therapy pressure: EPR
     EXPECT_NEAR(*s.resp_rate, 14.5, 0.1);
     EXPECT_NEAR(*s.tidal_ml, 450.0, 1.5);   // the machine's litres, shown as mL
     EXPECT_NEAR(*s.minute_vent_lpm, 6.5, 0.01);
@@ -132,7 +134,7 @@ protected:
 TEST_F(As11LiveStatsPublisherTest, DiscoveryNamesEachSensorOnTheDevice) {
     As11LiveStatsPublisher p(pub, "dev", "CPAP", 10);
     ASSERT_TRUE(p.announce());
-    ASSERT_EQ(out.size(), 10u);
+    ASSERT_EQ(out.size(), 11u);
     bool leak = false;
     for (auto& m : out) {
         EXPECT_TRUE(m.retain);
@@ -200,7 +202,7 @@ TEST_F(As11LiveStatsPublisherTest, SwitchingOffRemovesTheEntities) {
     int cleared = 0;
     for (auto& m : out)
         if (m.topic.rfind("homeassistant/sensor/dev_as11_live_", 0) == 0 && m.payload.empty() && m.retain) ++cleared;
-    EXPECT_EQ(cleared, 10) << "an empty retained config deletes each entity";
+    EXPECT_EQ(cleared, 11) << "an empty retained config deletes each entity";
     bool availability_cleared = false;
     for (auto& m : out)
         if (m.topic == "cpap/dev/realtime/as11/available" && m.payload.empty() && m.retain) availability_cleared = true;
